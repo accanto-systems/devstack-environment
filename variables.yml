@@ -1,0 +1,22 @@
+---
+# interface to bind public network to - should be eth1 for vagrant created virtual machines
+public_interface: "eth1"
+
+# devstack options
+release: "stein"
+enable_heat: yes
+
+# network configuration
+gateway: "192.168.56.1"
+floating_range: "192.168.56.0/24"
+start_floating: "192.168.56.131"
+end_floating: "192.168.56.250"
+
+# size of volume 
+volume_size: "51200M"
+
+# ALM variables
+# set to ip address of alm to register this location
+# alm: 192.168.56.100:8080
+# set to ip address of arm to register this location
+# arm: 192.168.56.100:32080

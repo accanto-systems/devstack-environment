@@ -1,0 +1,14 @@
+- hosts: devstack
+  gather_facts: no
+  become: yes
+  vars_files:
+    - variables.yml
+  pre_tasks:
+    - name: install python
+      raw: apt-get install -y python python-pip
+  tasks:
+    - setup: 
+    - import_role:
+        name: devstack
+    - import_role:
+        name: alm

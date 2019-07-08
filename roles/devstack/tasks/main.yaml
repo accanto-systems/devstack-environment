@@ -1,0 +1,59 @@
+- name: Check for an 'openstack' group
+  group:
+    name: openstack
+    state: present
+
+- name: Allow 'openstack' group to have passwordless sudo
+  lineinfile:
+    dest: /etc/sudoers
+    state: present
+    regexp: '^%openstack'
+    line: '%openstack ALL=(ALL) NOPASSWD: ALL'
+    validate: visudo -cf %s
+
+- name: Add user stack
+  user:
+    name: stack
+    groups: openstack
+    shell: /bin/bash
+    append: yes
+    comment: "Stack user"
+    state: present
+
+- name: Make /opt directory tree writeable
+  file:
+    path: /opt/
+    mode: 0777
+    recurse: yes
+
+- name: checkout devstack repo
+  git: 
+    repo: https://git.openstack.org/openstack-dev/devstack
+    dest: /opt/devstack
+    version: 'stable/{{ release }}'
+    clone: yes
+
+- name: Make /opt/devstack directory tree writeable
+  file:
+    path: /opt/devstack
+    mode: 0777
+    recurse: yes
+
+- name: add legacy nodejs
+  apt:
+    name: nodejs-legacy
+
+- name: copy devstack local.conf file
+  template:
+    src: ../conf/local.conf
+    dest: /opt/devstack
+    owner: stack
+    group: openstack
+    mode: 0644
+
+- name: Start devstack
+  command: ./stack.sh
+  args:
+    chdir: /opt/devstack/
+  become: yes
+  become_user: stack
